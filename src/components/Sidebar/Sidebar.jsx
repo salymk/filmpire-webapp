@@ -11,9 +11,12 @@ import {
 } from '@mui/material';
 import { Link } from 'react-router-dom';
 import { useTheme } from '@mui/styles';
+import styled from 'styled-components';
+import { useDispatch, useSelector } from 'react-redux';
 import useStyles from './styles';
 import { useGetGenresQuery } from '../../services/TMDB';
 import genreIcons from '../../assets/genres';
+import { selectGenreOrCategory } from '../../features/currentGenreOrCategory';
 
 const categories = [
   { label: 'Popular', value: 'popular' },
@@ -28,6 +31,8 @@ const Sidebar = ({ setMobileOpen }) => {
   const theme = useTheme();
   const classes = useStyles();
   const { data, isFetching } = useGetGenresQuery();
+  const dispatch = useDispatch();
+
   console.log(data);
 
   return (
@@ -43,7 +48,7 @@ const Sidebar = ({ setMobileOpen }) => {
         <ListSubheader>Categories</ListSubheader>
         {categories.map(({ label, value }) => (
           <Link key={value} className={classes.link} to="/">
-            <ListItem onClick={() => {}} button>
+            <ListItem onClick={() => dispatch(selectGenreOrCategory(value))} button>
               <ListItemIcon>
                 <img
                   src={genreIcons[label.toLowerCase()]}
@@ -58,7 +63,7 @@ const Sidebar = ({ setMobileOpen }) => {
       </List>
       <Divider />
       <List>
-        <ListSubheader>Genres</ListSubheader>
+        <StyledListSubHeader>Genres</StyledListSubHeader>
         {isFetching ? (
           <Box display="flex" justifyContent="center">
             <CircularProgress />
@@ -66,7 +71,7 @@ const Sidebar = ({ setMobileOpen }) => {
         ) : (
           data.genres.map(({ name, id }) => (
             <Link key={name} className={classes.link} to="/">
-              <ListItem onClick={() => {}} button>
+              <ListItem onClick={() => dispatch(selectGenreOrCategory(id))} button>
                 <ListItemIcon>
                   <img
                     src={genreIcons[name.toLowerCase()]}
@@ -74,7 +79,7 @@ const Sidebar = ({ setMobileOpen }) => {
                     height={30}
                   />
                 </ListItemIcon>
-                <ListItemText primary={name} />
+                <StyledListItemText primary={name} />
               </ListItem>
             </Link>
           ))
@@ -85,3 +90,17 @@ const Sidebar = ({ setMobileOpen }) => {
 };
 
 export default Sidebar;
+
+const StyledListItemText = styled(ListItemText)`
+  color: purple;
+
+  span {
+    font-size: 1rem;
+    font-weight: bolder;
+  }
+`;
+
+const StyledListSubHeader = styled(ListSubheader)`
+  color: black;
+  font-size: 1rem;
+`;
