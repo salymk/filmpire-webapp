@@ -13,7 +13,12 @@ export const tmdbApi = createApi({
 
     //   Get Movies by [Type]
     getMovies: builder.query({
-      query: ({ genreIdOrCategoryName, page }) => {
+      query: ({ genreIdOrCategoryName, page, searchQuery }) => {
+        // Get Movies by Search
+        if (searchQuery) {
+          return `/search/movie?query=${searchQuery}&page=${page}&api_key=${tmdbApiKey}`;
+        }
+
         // Get Movies by Category
         if (genreIdOrCategoryName && typeof genreIdOrCategoryName === 'string') {
           return `movie/${genreIdOrCategoryName}?page=${page}&api_key=${tmdbApiKey}`;
@@ -22,7 +27,6 @@ export const tmdbApi = createApi({
         //   Get Movies by Genre
         if (genreIdOrCategoryName && typeof genreIdOrCategoryName === 'number') {
           return `discover/movie?with_genres=${genreIdOrCategoryName}&page=${page}&api_key=${tmdbApiKey}`;
-          // https://api.themoviedb.org/3/discover/movie?api_key=7e78540fc503c4797dc3f01cafd6970f&language=en-US&sort_by=popularity.desc&include_adult=false&include_video=false&page=1&with_genres=99
         }
 
         // Get Popular Movies
